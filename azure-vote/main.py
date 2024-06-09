@@ -69,10 +69,10 @@ def index():
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
         with tracer.span(name="Cat vote") as cat_votes:
-            cat_votes.add_annotation('Cats Vote')
+            cat_votes.add_attribute('count', vote1)
         vote2 = r.get(button2).decode('utf-8')
         with tracer.span(name="Dog vote") as dog_votes:
-            dog_votes.add_annotation('Dogs Vote')
+            dog_votes.add_attribute('count', vote2)
 
         # Return index with values
         return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
@@ -105,5 +105,5 @@ def index():
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
 if __name__ == "__main__":
-    app.run(port=5001)
-    #app.run(host='0.0.0.0', threaded=True, debug=True)  # remote
+    # app.run(port=5001)
+    app.run(host='0.0.0.0', threaded=True, debug=True)  # remote
