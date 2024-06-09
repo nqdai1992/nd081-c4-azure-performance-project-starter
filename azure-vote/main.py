@@ -10,7 +10,7 @@ from datetime import datetime
 # App Insights
 
 from opencensus.ext.azure.log_exporter import AzureLogHandler
-from opencensus.ext.azure.trace_exporter import AzureExporter
+from opencensus.ext.azure.log_exporter import AzureEventHandler
 from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
@@ -21,7 +21,7 @@ logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=f29d23a7
 logger.setLevel(logging.INFO)
 
 # Metrics
-exporter = AzureExporter(connection_string='InstrumentationKey=f29d23a7-d400-4e0d-ac40-b102b8f84a7d;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/;ApplicationId=9b27a1a1-2de3-4cce-99c8-7ee4ef8ecfc2')
+exporter = AzureEventHandler(connection_string='InstrumentationKey=f29d23a7-d400-4e0d-ac40-b102b8f84a7d;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/;ApplicationId=9b27a1a1-2de3-4cce-99c8-7ee4ef8ecfc2')
 
 # Tracing
 tracer = Tracer(exporter=exporter, sampler=ProbabilitySampler(1.0))
