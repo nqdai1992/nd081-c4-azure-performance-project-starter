@@ -9,30 +9,27 @@ from datetime import datetime
 
 # App Insights
 
-from opencensus.ext.azure.log_exporter import AzureEventHandler
+from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
-from opencensus.ext.azure.metrics_exporter import MetricsExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
 # Logging
 logger = logging.getLogger(__name__)
-logger.addHandler(AzureEventHandler(connection_string='InstrumentationKey=f29d23a7-d400-4e0d-ac40-b102b8f84a7d;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/;ApplicationId=9b27a1a1-2de3-4cce-99c8-7ee4ef8ecfc2'))
+logger.addHandler(AzureLogHandler(connection_string='InstrumentationKey=f29d23a7-d400-4e0d-ac40-b102b8f84a7d;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/;ApplicationId=9b27a1a1-2de3-4cce-99c8-7ee4ef8ecfc2'))
 logger.setLevel(logging.INFO)
 
 # Metrics
-exporter = MetricsExporter(connection_string='InstrumentationKey=f29d23a7-d400-4e0d-ac40-b102b8f84a7d;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/;ApplicationId=9b27a1a1-2de3-4cce-99c8-7ee4ef8ecfc2')
+exporter = AzureExporter(connection_string='InstrumentationKey=f29d23a7-d400-4e0d-ac40-b102b8f84a7d;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/;ApplicationId=9b27a1a1-2de3-4cce-99c8-7ee4ef8ecfc2')
 
 # Tracing
-tracer = Tracer(exporter=AzureExporter(connection_string='InstrumentationKey=f29d23a7-d400-4e0d-ac40-b102b8f84a7d;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/;ApplicationId=9b27a1a1-2de3-4cce-99c8-7ee4ef8ecfc2'),
-                sampler=ProbabilitySampler(1.0))
+tracer = Tracer(exporter=exporter, sampler=ProbabilitySampler(1.0))
 
 app = Flask(__name__)
 
 # Requests
-middleware = FlaskMiddleware(app, exporter=AzureExporter(connection_string='InstrumentationKey=f29d23a7-d400-4e0d-ac40-b102b8f84a7d;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/;ApplicationId=9b27a1a1-2de3-4cce-99c8-7ee4ef8ecfc2'),
-                             sampler=ProbabilitySampler(rate=1.0))
+middleware = FlaskMiddleware(app, exporter=exporter, sampler=ProbabilitySampler(rate=1.0))
 
 # Load configurations from environment or config file
 app.config.from_pyfile('config_file.cfg')
@@ -84,11 +81,11 @@ def index():
             r.set(button2, 0)
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            logger.info('Cat vote', extra=properties)
+            logger.info('Reset cate vote', extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            logger.info('Dog vote', extra=properties)
+            logger.info('Reset cat vote', extra=properties)
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
